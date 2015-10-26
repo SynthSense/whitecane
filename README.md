@@ -3,7 +3,7 @@
 
 ####Problem
 
-    Navigating to a completely unfamiliar surrounding is already difficult, it’s also a challenge to avoid obstacles on the way to a destination.
+Navigating to a completely unfamiliar surrounding is already difficult, it’s also a challenge to avoid obstacles on the way to a destination.
 
 - Sidewalk crack detection
   - Cracks are really hard to notice. An uneven road surface can easily trip anyone. Moreover, canes can get stuck in a crack and break. No current cane system we could find detects this. Our alert system will alert the user before such situations occur. 

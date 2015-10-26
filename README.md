@@ -2,6 +2,7 @@
 ###Obstacle Avoidance
 
 ####Problem
+
   Navigating to a completely unfamiliar surrounding is already difficult, it’s also a challenge to avoid obstacles on the way to a destination.
 
 - Sidewalk crack detection

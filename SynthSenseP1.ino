@@ -100,7 +100,7 @@ void loop() {
 
     default:
       Serial.print("DEFAULT");
-    break;
+      break;
   }
   
 }

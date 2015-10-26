@@ -20,7 +20,7 @@ NewPing sonar_2(TRIGGER_PIN_2, ECHO_PIN_2, MAX_DISTANCE); // NewPing setup of pi
 
 int baseline_IR;
 int threshold_IR;
-int curr_IR;
+float curr_IR;
 
 unsigned int threshold_us1;
 unsigned int threshold_us2;
@@ -65,7 +65,7 @@ void loop() {
       break;
 
     case IR:
-      curr_IR = analogRead(IR_IN); // Change this
+      curr_IR = analogRead(IR_IN) * ( 5.0 / 1023.0 ); // Change this
       Serial.print("IR:");
       Serial.print(curr_IR);
       state = US_1;

@@ -20,7 +20,7 @@ NewPing sonar_2(TRIGGER_PIN_2, ECHO_PIN_2, MAX_DISTANCE); // NewPing setup of pi
 
 int baseline_IR;
 int threshold_IR;
-int curr_IR;
+float curr_IR;
 
 unsigned int threshold_us1;
 unsigned int threshold_us2;
@@ -65,9 +65,9 @@ void loop() {
       break;
 
     case IR:
-      curr_IR = analogRead(IR_IN); // Change this
-      Serial.print("IR:");
-      Serial.print(curr_IR);
+//      curr_IR = analogRead(IR_IN) * ( 5.0 / 1023.0 ); // Change this
+//      Serial.print("IR:");
+//      Serial.print(curr_IR);
       state = US_1;
       break;
 
@@ -81,7 +81,7 @@ void loop() {
       if (curr_dist > threshold_us1) {
         state = US_2;
       } else {
-        Serial.print("OBSTACLE DETECTED!");
+        Serial.println("OBSTACLE DETECTED!");
         state = VIBRATE_1;
       }
       break;
@@ -100,7 +100,7 @@ void loop() {
 
     default:
       Serial.print("DEFAULT");
-    break;
+      break;
   }
   
 }

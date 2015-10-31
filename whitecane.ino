@@ -1,10 +1,9 @@
+// Project: Whitecane
+// Organization: Synthsense
+// Authors: Adhitya Murali, Tomas Vega
+// Purpose: Example NewPing library sketch that does a ping about 20 times per second.
+
 #include <NewPing.h>
-
-// ---------------------------------------------------------------------------
-// Example NewPing library sketch that does a ping about 20 times per second.
-// ---------------------------------------------------------------------------
-
-
 
 #define TRIGGER_PIN_1  11  // Arduino pin tied to trigger pin on the ultrasonic sensor.
 #define ECHO_PIN_1     10  // Arduino pin tied to echo pin on the ultrasonic sensor.
@@ -12,14 +11,14 @@
 #define ECHO_PIN_2     8
 #define MOTOR_1        14
 #define IR_IN          15
-#define MAX_DISTANCE 300 // Maximum distance we want to ping for (in centimeters). Maximum sensor distance is rated at 400-500cm.
+#define MAX_DISTANCE   300 // Maximum distance we want to ping for (in centimeters). Maximum sensor distance is rated at 400-500cm.
 
 NewPing sonar_1(TRIGGER_PIN_1, ECHO_PIN_1, MAX_DISTANCE); // NewPing setup of pins and maximum distance.
 NewPing sonar_2(TRIGGER_PIN_2, ECHO_PIN_2, MAX_DISTANCE); // NewPing setup of pins and maximum distance.
 
-
 int baseline_IR;
 int threshold_IR;
+
 float curr_IR;
 
 unsigned int threshold_us1;
@@ -53,7 +52,6 @@ void setup() {
 
 void loop() {
   switch(state) {
-
     case CALIBRATE:
       // Collect 100 data points and average. Send buzz feedback to us_1
       state = US_1;  // By right this should be IR
@@ -102,5 +100,4 @@ void loop() {
       Serial.print("DEFAULT");
       break;
   }
-  
 }

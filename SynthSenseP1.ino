@@ -12,7 +12,7 @@
 #define ECHO_PIN_2     8
 #define MOTOR_1        14
 #define IR_IN          15
-#define MAX_DISTANCE 300 // Maximum distance we want to ping for (in centimeters). Maximum sensor distance is rated at 400-500cm.
+#define MAX_DISTANCE 500 // Maximum distance we want to ping for (in centimeters). Maximum sensor distance is rated at 400-500cm.
 
 NewPing sonar_1(TRIGGER_PIN_1, ECHO_PIN_1, MAX_DISTANCE); // NewPing setup of pins and maximum distance.
 NewPing sonar_2(TRIGGER_PIN_2, ECHO_PIN_2, MAX_DISTANCE); // NewPing setup of pins and maximum distance.
@@ -65,9 +65,9 @@ void loop() {
       break;
 
     case IR:
-//      curr_IR = analogRead(IR_IN) * ( 5.0 / 1023.0 ); // Change this
-//      Serial.print("IR:");
-//      Serial.print(curr_IR);
+      curr_IR = analogRead(IR_IN) * ( 5.0 / 1023.0 ); // Change this
+      Serial.print("IR:");
+      Serial.println(curr_IR);
       state = US_1;
       break;
 
@@ -78,7 +78,7 @@ void loop() {
       Serial.print("US_1: ");
       Serial.print(curr_dist); // Convert ping time to distance in cm and print result (0 = outside set distance range)
       Serial.println("cm");
-      if (curr_dist > threshold_us1) {
+      if ((curr_dist > threshold_us1) || (curr_dist <= 1.0)) {
         state = US_2;
       } else {
         Serial.println("OBSTACLE DETECTED!");
@@ -89,7 +89,7 @@ void loop() {
     case VIBRATE_1:
       // Vibrate lol;
       digitalWrite(MOTOR_1, HIGH);
-      delay(1000);
+      delay(500);
       digitalWrite(MOTOR_1, LOW);
       state = IR;
       break;

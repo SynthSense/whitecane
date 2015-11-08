@@ -11,11 +11,7 @@
 #define ECHO_PIN_2     8
 #define MOTOR_1        14
 #define IR_IN          15
-<<<<<<< HEAD:SynthSenseP1.ino
 #define MAX_DISTANCE 500 // Maximum distance we want to ping for (in centimeters). Maximum sensor distance is rated at 400-500cm.
-=======
-#define MAX_DISTANCE   300 // Maximum distance we want to ping for (in centimeters). Maximum sensor distance is rated at 400-500cm.
->>>>>>> ea25a303ca2f6f93d5d12dceac7fd522babe280a:whitecane.ino
 
 NewPing sonar_1(TRIGGER_PIN_1, ECHO_PIN_1, MAX_DISTANCE); // NewPing setup of pins and maximum distance.
 NewPing sonar_2(TRIGGER_PIN_2, ECHO_PIN_2, MAX_DISTANCE); // NewPing setup of pins and maximum distance.

@@ -10,6 +10,7 @@
 #define TRIGGER_PIN_2  9
 #define ECHO_PIN_2     8
 #define MOTOR_1        14
+#define MOTOR_2        13
 #define IR_IN          15
 #define MAX_DISTANCE 500 // Maximum distance we want to ping for (in centimeters). Maximum sensor distance is rated at 400-500cm.
 
@@ -47,6 +48,7 @@ void setup() {
   threshold_us1 = 100; // This is in centimeters!
   threshold_us2 = 100; // This is in centimeters!  
   pinMode(MOTOR_1, OUTPUT);
+  pinMode(MOTOR_2, OUTPUT);
   total = 0;
 }
 
@@ -63,9 +65,9 @@ void loop() {
       break;
 
     case IR:
-      curr_IR = analogRead(IR_IN) * ( 5.0 / 1023.0 ); // Change this
-      Serial.print("IR:");
-      Serial.println(curr_IR);
+//      curr_IR = analogRead(IR_IN) * ( 5.0 / 1023.0 ); // Change this
+//      Serial.print("IR:");
+//      Serial.println(curr_IR);
       state = US_1;
       break;
 
@@ -79,7 +81,7 @@ void loop() {
       if ((curr_dist > threshold_us1) || (curr_dist <= 1.0)) {
         state = US_2;
       } else {
-        Serial.println("OBSTACLE DETECTED!");
+        Serial.println("OBSTACLE DETECTED 1");
         state = VIBRATE_1;
       }
       break;
@@ -89,10 +91,28 @@ void loop() {
       digitalWrite(MOTOR_1, HIGH);
       delay(500);
       digitalWrite(MOTOR_1, LOW);
-      state = IR;
+      state = US_2;
       break;
 
     case US_2:
+      delay(50);
+      curr_us2 = sonar_2.ping(); // Send ping, get ping time in microseconds (uS).
+      curr_dist = curr_us2  / US_ROUNDTRIP_CM;
+      Serial.print("US_2: ");
+      Serial.print(curr_dist); // Convert ping time to distance in cm and print result (0 = outside set distance range)
+      Serial.println("cm");
+      if ((curr_dist > threshold_us2) || (curr_dist <= 1.0)) {
+        state = IR;
+      } else {
+        Serial.println("OBSTACLE DETECTED 2");
+        state = IR;
+      }
+      break;
+
+    case VIBRATE_2:
+      digitalWrite(MOTOR_2, HIGH);
+      delay(500);
+      digitalWrite(MOTOR_2, LOW);
       state = IR;
       break;
 

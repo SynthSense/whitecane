@@ -9,18 +9,12 @@
 #define ECHO_PIN_1     10  // Arduino pin tied to echo pin on the ultrasonic sensor.
 #define TRIGGER_PIN_2  9
 #define ECHO_PIN_2     8
-#define MOTOR_1        14
-#define MOTOR_2        13
-#define IR_IN          15
+#define MOTOR_1        15
+#define MOTOR_2        14
 #define MAX_DISTANCE 500 // Maximum distance we want to ping for (in centimeters). Maximum sensor distance is rated at 400-500cm.
 
 NewPing sonar_1(TRIGGER_PIN_1, ECHO_PIN_1, MAX_DISTANCE); // NewPing setup of pins and maximum distance.
 NewPing sonar_2(TRIGGER_PIN_2, ECHO_PIN_2, MAX_DISTANCE); // NewPing setup of pins and maximum distance.
-
-int baseline_IR;
-int threshold_IR;
-
-float curr_IR;
 
 unsigned int threshold_us1;
 unsigned int threshold_us2;
@@ -30,13 +24,11 @@ unsigned int curr_dist;
 unsigned int total;
 
 enum state_type {
-  CALIBRATE,
+  INIT,
   US_1,
   VIBRATE_1,
   US_2,
   VIBRATE_2,
-  IR,
-  VIBRATE_3,
 };
 
 state_type state;
@@ -44,7 +36,6 @@ state_type state;
 void setup() {
   Serial.begin(115200); // Open serial monitor at 115200 baud to see ping results.
   state = US_1;  // By right this should be CALIBRATION
-  baseline_IR = 0;
   threshold_us1 = 100; // This is in centimeters!
   threshold_us2 = 100; // This is in centimeters!  
   pinMode(MOTOR_1, OUTPUT);
@@ -54,20 +45,7 @@ void setup() {
 
 void loop() {
   switch(state) {
-    case CALIBRATE:
-      // Collect 100 data points and average. Send buzz feedback to us_1
-      state = US_1;  // By right this should be IR
-      // Collect 100 data points
-      for (int i = 0; i < 100; i++) {
-          total += 1; // Change this
-      }
-      baseline_IR = total / 100; // Verify if this works
-      break;
-
-    case IR:
-//      curr_IR = analogRead(IR_IN) * ( 5.0 / 1023.0 ); // Change this
-//      Serial.print("IR:");
-//      Serial.println(curr_IR);
+    case INIT:
       state = US_1;
       break;
 
@@ -87,7 +65,6 @@ void loop() {
       break;
 
     case VIBRATE_1:
-      // Vibrate lol;
       digitalWrite(MOTOR_1, HIGH);
       delay(500);
       digitalWrite(MOTOR_1, LOW);
@@ -102,10 +79,10 @@ void loop() {
       Serial.print(curr_dist); // Convert ping time to distance in cm and print result (0 = outside set distance range)
       Serial.println("cm");
       if ((curr_dist > threshold_us2) || (curr_dist <= 1.0)) {
-        state = IR;
+        state = INIT;
       } else {
         Serial.println("OBSTACLE DETECTED 2");
-        state = IR;
+        state = VIBRATE_2;
       }
       break;
 
@@ -113,7 +90,7 @@ void loop() {
       digitalWrite(MOTOR_2, HIGH);
       delay(500);
       digitalWrite(MOTOR_2, LOW);
-      state = IR;
+      state = INIT;
       break;
 
     default:

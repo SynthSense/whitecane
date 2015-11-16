@@ -11,8 +11,13 @@
 #define ECHO_PIN_2     4
 
 // These should be using the MCP23008 port expander
-#define MOTOR_1        4
-#define MOTOR_2        5
+#define CANE_MOTOR_1        1
+#define CANE_MOTOR_2        2
+#define NAV_MOTOR_1         3
+#define NAV_MOTOR_2         4
+#define NAV_MOTOR_3         5
+#define NAV_MOTOR_4         6
+
 #define MAX_DISTANCE 500 // Maximum distance we want to ping for (in centimeters). Maximum sensor distance is rated at 400-500cm.
 
 enum state_type {
@@ -39,6 +44,32 @@ long read_distance(int trigger_pin, int echo_pin) {
   return duration/58.2;
 }
 
+void navband_vibrate_left(void) {
+  mcp.digitalWrite(NAV_MOTOR_1, HIGH);
+  mcp.digitalWrite(NAV_MOTOR_2, LOW);
+  mcp.digitalWrite(NAV_MOTOR_3, LOW);
+  mcp.digitalWrite(NAV_MOTOR_4, LOW);
+  delay(200);
+
+  mcp.digitalWrite(NAV_MOTOR_1, LOW);
+  mcp.digitalWrite(NAV_MOTOR_2, HIGH);
+  mcp.digitalWrite(NAV_MOTOR_3, LOW);
+  mcp.digitalWrite(NAV_MOTOR_4, LOW);
+  delay(200);
+  
+  mcp.digitalWrite(NAV_MOTOR_1, LOW);
+  mcp.digitalWrite(NAV_MOTOR_2, LOW);
+  mcp.digitalWrite(NAV_MOTOR_3, HIGH);
+  mcp.digitalWrite(NAV_MOTOR_4, LOW);
+  delay(200);
+  
+  mcp.digitalWrite(NAV_MOTOR_1, LOW);
+  mcp.digitalWrite(NAV_MOTOR_2, LOW);
+  mcp.digitalWrite(NAV_MOTOR_3, LOW);
+  mcp.digitalWrite(NAV_MOTOR_4, HIGH);
+  delay(200);
+}
+
 void setup() {
   Serial.begin(115200); // Open serial monitor at 115200 baud to see ping results.
   state = INIT;  // By right this should be CALIBRATION
@@ -48,6 +79,12 @@ void setup() {
   threshold_us2 = 100.0; // This is in centimeters!
   pinMode(TRIGGER_PIN_1, OUTPUT);
   pinMode(ECHO_PIN_1, INPUT);
+
+  // Initialize Adafruit MCP23008 I/O expander
+  mcp.begin();
+  for (int i = 1; i < 6; i++) {
+    mcp.pinMode(i, OUTPUT);  
+  }
 }
 
 void loop() {
@@ -72,9 +109,14 @@ void loop() {
       break;
 
     case VIBRATE_1:
-      digitalWrite(MOTOR_1, HIGH);
+      digitalWrite(CANE_MOTOR_1, HIGH);
       delay(500);
-      digitalWrite(MOTOR_1, LOW);
+      digitalWrite(CANE_MOTOR_1, LOW);
+      state = INIT;
+      break;
+
+    case VIBRATE_2:
+      navband_vibrate_left();
       state = INIT;
       break;
       

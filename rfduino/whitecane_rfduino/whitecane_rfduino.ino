@@ -4,6 +4,7 @@
 
 #include <Wire.h>
 #include "Adafruit_MCP23008.h"
+#include <RFduinoBLE.h>
 
 #define TRIGGER_PIN_1  1  // Arduino pin tied to trigger pin on the ultrasonic sensor.
 #define ECHO_PIN_1     2  // Arduino pin tied to echo pin on the ultrasonic sensor.
@@ -52,30 +53,16 @@ long read_distance(int trigger_pin, int echo_pin) {
 }
 
 void navband_vibrate_left(void) {
-  pin_set(1);
-//  mcp.digitalWrite(NAV_MOTOR_1, HIGH);
-//  mcp.digitalWrite(NAV_MOTOR_2, LOW);
-//  mcp.digitalWrite(NAV_MOTOR_3, LOW);
-//  mcp.digitalWrite(NAV_MOTOR_4, LOW);
-  delay(200);
-  pin_set(3);
-//  mcp.digitalWrite(NAV_MOTOR_1, LOW);
-//  mcp.digitalWrite(NAV_MOTOR_2, HIGH);
-//  mcp.digitalWrite(NAV_MOTOR_3, LOW);
-//  mcp.digitalWrite(NAV_MOTOR_4, LOW);
-  delay(200);
-  pin_set(7);
-//  mcp.digitalWrite(NAV_MOTOR_1, LOW);
-//  mcp.digitalWrite(NAV_MOTOR_2, LOW);
-//  mcp.digitalWrite(NAV_MOTOR_3, HIGH);
-//  mcp.digitalWrite(NAV_MOTOR_4, LOW);
-  delay(200);
-  pin_set(15);
-//  mcp.digitalWrite(NAV_MOTOR_1, LOW);
-//  mcp.digitalWrite(NAV_MOTOR_2, LOW);
-//  mcp.digitalWrite(NAV_MOTOR_3, LOW);
-//  mcp.digitalWrite(NAV_MOTOR_4, HIGH);
-  delay(200);
+  for (int i = 1; i <= 16; i << 1) {
+    pin_set(i - 1);
+    delay(200);
+  }
+}
+void navband_vibrate_right(void) {
+  for (int i = 16; i >= 1; i >> 1) {
+    pin_set(i - 1);
+    delay(200);
+  }
 }
 
 void setup() {
@@ -93,6 +80,9 @@ void setup() {
   for (int i = 1; i < 6; i++) {
     mcp.pinMode(i, OUTPUT);  
   }
+  RFduinoBLE.advertisementData = "CouDow";
+  RFduinoBLE.deviceName = "ChillerNavBand";
+  RFduinoBLE.begin();
 }
 
 void loop() {
@@ -133,3 +123,11 @@ void loop() {
       break;
   }
 }
+void RFduinoBLE_onReceive(char *data, int len) {
+  if (data[0] == 0){  
+    navband_vibrate_left();
+  } else if (data[0] == 1) {
+    navband_vibrate_right();
+  }
+}
+

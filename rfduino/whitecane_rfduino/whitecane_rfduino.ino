@@ -6,9 +6,9 @@
 #include "Adafruit_MCP23008.h"
 #include <RFduinoBLE.h>
 
-#define TRIGGER_PIN_1  1  // Arduino pin tied to trigger pin on the ultrasonic sensor.
-#define ECHO_PIN_1     2  // Arduino pin tied to echo pin on the ultrasonic sensor.
-#define TRIGGER_PIN_2  3
+#define TRIGGER_PIN_1  2  // Arduino pin tied to trigger pin on the ultrasonic sensor.
+#define ECHO_PIN_1     3  // Arduino pin tied to echo pin on the ultrasonic sensor.
+#define TRIGGER_PIN_2  1
 #define ECHO_PIN_2     4
 
 // These should be using the MCP23008 port expander
@@ -66,7 +66,7 @@ void navband_vibrate_right(void) {
 }
 
 void setup() {
-  Serial.begin(115200); // Open serial monitor at 115200 baud to see ping results.
+  Serial.begin(9600); // Open serial monitor at 115200 baud to see ping results.
   state = INIT;  // By right this should be CALIBRATION
 
   // Initialize ultrasonic sensors
@@ -102,7 +102,7 @@ void loop() {
         state = INIT;
       } else {
         Serial.println("OBSTACLE DETECTED 1");
-        state = INIT;
+        state = VIBRATE_1;
       }
       break;
 

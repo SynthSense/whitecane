@@ -1,6 +1,6 @@
 // Project: Whitecane
 // Organization: Synthsense
-// Authors: Adhitya Murali, Tomas Vega
+// Authors: Adhitya Murali, Tomas Vega, Craig Hiller
 
 #include <Wire.h>
 #include "Adafruit_MCP23008.h"
@@ -34,6 +34,13 @@ long threshold_us2;
 state_type state;
 long curr_dist;
 
+void pin_set(char pattern) {
+  for(char i = 0; i < 8; i++) {
+    bool val = (pattern & (1 << i)) >> i;
+    mcp.digitalWrite(i, val);
+  }
+  
+}
 long read_distance(int trigger_pin, int echo_pin) {
   digitalWrite(trigger_pin, LOW);
   delayMicroseconds(2);
@@ -45,28 +52,29 @@ long read_distance(int trigger_pin, int echo_pin) {
 }
 
 void navband_vibrate_left(void) {
-  mcp.digitalWrite(NAV_MOTOR_1, HIGH);
-  mcp.digitalWrite(NAV_MOTOR_2, LOW);
-  mcp.digitalWrite(NAV_MOTOR_3, LOW);
-  mcp.digitalWrite(NAV_MOTOR_4, LOW);
+  pin_set(1);
+//  mcp.digitalWrite(NAV_MOTOR_1, HIGH);
+//  mcp.digitalWrite(NAV_MOTOR_2, LOW);
+//  mcp.digitalWrite(NAV_MOTOR_3, LOW);
+//  mcp.digitalWrite(NAV_MOTOR_4, LOW);
   delay(200);
-
-  mcp.digitalWrite(NAV_MOTOR_1, LOW);
-  mcp.digitalWrite(NAV_MOTOR_2, HIGH);
-  mcp.digitalWrite(NAV_MOTOR_3, LOW);
-  mcp.digitalWrite(NAV_MOTOR_4, LOW);
+  pin_set(3);
+//  mcp.digitalWrite(NAV_MOTOR_1, LOW);
+//  mcp.digitalWrite(NAV_MOTOR_2, HIGH);
+//  mcp.digitalWrite(NAV_MOTOR_3, LOW);
+//  mcp.digitalWrite(NAV_MOTOR_4, LOW);
   delay(200);
-  
-  mcp.digitalWrite(NAV_MOTOR_1, LOW);
-  mcp.digitalWrite(NAV_MOTOR_2, LOW);
-  mcp.digitalWrite(NAV_MOTOR_3, HIGH);
-  mcp.digitalWrite(NAV_MOTOR_4, LOW);
+  pin_set(7);
+//  mcp.digitalWrite(NAV_MOTOR_1, LOW);
+//  mcp.digitalWrite(NAV_MOTOR_2, LOW);
+//  mcp.digitalWrite(NAV_MOTOR_3, HIGH);
+//  mcp.digitalWrite(NAV_MOTOR_4, LOW);
   delay(200);
-  
-  mcp.digitalWrite(NAV_MOTOR_1, LOW);
-  mcp.digitalWrite(NAV_MOTOR_2, LOW);
-  mcp.digitalWrite(NAV_MOTOR_3, LOW);
-  mcp.digitalWrite(NAV_MOTOR_4, HIGH);
+  pin_set(15);
+//  mcp.digitalWrite(NAV_MOTOR_1, LOW);
+//  mcp.digitalWrite(NAV_MOTOR_2, LOW);
+//  mcp.digitalWrite(NAV_MOTOR_3, LOW);
+//  mcp.digitalWrite(NAV_MOTOR_4, HIGH);
   delay(200);
 }
 

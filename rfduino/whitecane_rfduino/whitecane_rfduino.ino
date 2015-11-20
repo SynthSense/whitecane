@@ -54,13 +54,13 @@ long read_distance(int trigger_pin, int echo_pin) {
 
 void navband_vibrate_left(void) {
   for (int i = 1; i <= 16; i << 1) {
-    pin_set(i - 1);
+    pin_set(i );
     delay(200);
   }
 }
 void navband_vibrate_right(void) {
   for (int i = 16; i >= 1; i >> 1) {
-    pin_set(i - 1);
+    pin_set(i );
     delay(200);
   }
 }

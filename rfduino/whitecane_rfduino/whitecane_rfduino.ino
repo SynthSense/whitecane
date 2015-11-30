@@ -49,12 +49,14 @@ void pin_set(char pattern) {
   
 }
 long read_distance(int trigger_pin, int echo_pin) {
+  Serial.println("READ-DIST1");
   mcp.digitalWrite(trigger_pin, LOW);
   delayMicroseconds(2);
   mcp.digitalWrite(trigger_pin, HIGH);
   delayMicroseconds(10);
   mcp.digitalWrite(trigger_pin, LOW);
-  long duration = pulseIn(echo_pin, HIGH);
+  long duration = pulseIn(echo_pin, HIGH, 1000);
+  Serial.println("READ-DIST2");
   return duration/58.2;
 }
 
@@ -123,7 +125,7 @@ void setup() {
 }
 
 void loop() {
-  
+  Serial.println("LOOP");
   switch(state) {
 
     case INIT:

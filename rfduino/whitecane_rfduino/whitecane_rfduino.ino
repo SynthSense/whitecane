@@ -34,6 +34,9 @@ long threshold_us1;
 long threshold_us2;
 state_type state;
 long curr_dist;
+int hcsr_timeout;
+int inter_ping_delay;
+int vibration_delay;
 
 void pin_set(char pattern) {
   for(char i = 0; i < 8; i++) {
@@ -42,21 +45,20 @@ void pin_set(char pattern) {
     if (val == 0) {
       mcp.digitalWrite(i, LOW);
     } else {
-      mcp.digitalWrite(i, HIGH);      
+      mcp.digitalWrite(i, HIGH);
     }
 
   }
   
 }
+
 long read_distance(int trigger_pin, int echo_pin) {
-  Serial.println("READ-DIST1");
   mcp.digitalWrite(trigger_pin, LOW);
   delayMicroseconds(2);
   mcp.digitalWrite(trigger_pin, HIGH);
   delayMicroseconds(10);
   mcp.digitalWrite(trigger_pin, LOW);
-  long duration = pulseIn(echo_pin, HIGH, 1000);
-  Serial.println("READ-DIST2");
+  long duration = pulseIn(echo_pin, HIGH, hcsr_timeout);
   return duration/58.2;
 }
 
@@ -111,6 +113,9 @@ void setup() {
   // Initialize ultrasonic sensors
   threshold_us1 = 100.0; // This is in centimeters!
   threshold_us2 = 100.0; // This is in centimeters!
+  hcsr_timeout = 1000;
+  inter_ping_delay = 100;
+  vibration_delay = 500;
   pinMode(ECHO_PIN_1, INPUT);
   pinMode(ECHO_PIN_2, INPUT);
 
@@ -119,22 +124,21 @@ void setup() {
   for (int i = 0; i < 8; i++) {
     mcp.pinMode(i, OUTPUT);  
   }
+
   RFduinoBLE.advertisementData = "CouDow";
   RFduinoBLE.deviceName = "ChillerNavBand";
   RFduinoBLE.begin();
 }
 
 void loop() {
-  Serial.println("LOOP");
   switch(state) {
 
     case INIT:
-      Serial.println("INIT");
       state = US_1;
       break;
 
     case US_1:
-      delay(50); // Wait 50ms between pings (about 20 pings/sec). 29ms should be the shortest delay between pings.
+      delay(inter_ping_delay); // Wait for some time between pings (about 20 pings/sec). 29ms should be the shortest delay between pings.
       curr_dist = read_distance(TRIGGER_PIN_1, ECHO_PIN_1);
       Serial.print("US_1: ");
       Serial.print(curr_dist);
@@ -142,7 +146,6 @@ void loop() {
       if ((curr_dist > threshold_us1) || (curr_dist <= 1.0)) {
         state = US_2;
       } else {
-        Serial.println("OBSTACLE DETECTED 1");
         state = VIBRATE_1;
       }
       break;
@@ -150,13 +153,13 @@ void loop() {
     case VIBRATE_1:
       Serial.println("VIBRATE 1");
       mcp.digitalWrite(CANE_MOTOR_1, HIGH);
-      delay(500);
+      delay(vibration_delay);
       mcp.digitalWrite(CANE_MOTOR_1, LOW);
       state = US_2;
       break;
 
     case US_2:
-      delay(50); // Wait 50ms between pings (about 20 pings/sec). 29ms should be the shortest delay between pings.
+      delay(inter_ping_delay); // Wait for some time between pings (about 20 pings/sec). 29ms should be the shortest delay between pings.
       curr_dist = read_distance(TRIGGER_PIN_2, ECHO_PIN_2);
       Serial.print("US_2: ");
       Serial.print(curr_dist);
@@ -164,7 +167,6 @@ void loop() {
       if ((curr_dist > threshold_us2) || (curr_dist <= 1.0)) {
         state = INIT;
       } else {
-        Serial.println("OBSTACLE DETECTED 2");
         state = VIBRATE_2;
       }
       break;
@@ -172,7 +174,7 @@ void loop() {
     case VIBRATE_2:
       Serial.println("VIBRATE 2");
       mcp.digitalWrite(CANE_MOTOR_2, HIGH);
-      delay(500);
+      delay(vibration_delay);
       mcp.digitalWrite(CANE_MOTOR_2, LOW);
       state = INIT;
       break;

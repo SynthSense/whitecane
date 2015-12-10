@@ -30,8 +30,7 @@ enum state_type {
 };
 
 Adafruit_MCP23008 mcp;
-long threshold_us1;
-long threshold_us2;
+long threshold;
 state_type state;
 long curr_dist;
 int hcsr_timeout;
@@ -136,12 +135,11 @@ void setup() {
   state = INIT;  // By right this should be CALIBRATION
 
   // Initialize ultrasonic sensors
-  threshold_us1 = 100.0; // This is in centimeters!
-  threshold_us2 = 100.0; // This is in centimeters!
+  threshold = 100.0; // This is in centimeters!
   hcsr_timeout = 1000;
   inter_ping_delay = 100;
   vibration_delay = 500;
-  num_end_rotations = 3;
+  num_end_rotations = 4;
   pinMode(ECHO_PIN_1, INPUT);
   pinMode(ECHO_PIN_2, INPUT);
 
@@ -169,7 +167,7 @@ void loop() {
       Serial.print("US_1: ");
       Serial.print(curr_dist);
       Serial.println("cm");
-      if ((curr_dist > threshold_us1) || (curr_dist <= 1.0)) {
+      if ((curr_dist > threshold) || (curr_dist <= 1.0)) {
         state = US_2;
       } else {
         state = VIBRATE_1;
@@ -190,7 +188,7 @@ void loop() {
       Serial.print("US_2: ");
       Serial.print(curr_dist);
       Serial.println("cm");
-      if ((curr_dist > threshold_us2) || (curr_dist <= 1.0)) {
+      if ((curr_dist > threshold) || (curr_dist <= 1.0)) {
         state = INIT;
       } else {
         state = VIBRATE_2;
@@ -213,7 +211,7 @@ void loop() {
 
 void RFduinoBLE_onReceive(char *data, int len) {
   int cmd = data[0];
-  if (cmd == 0) {
+  if (cmd == 0){
     navband_vibrate_left();
   } else if (cmd == 1) {
     navband_vibrate_right();
@@ -221,6 +219,16 @@ void RFduinoBLE_onReceive(char *data, int len) {
     navband_vibrate_left_arrive();
   } else if (cmd == 3) {
     navband_vibrate_right_arrive();
+  } else if (cmd == 4) {
+    threshold = 50;
+  } else if (cmd == 5) {
+    threshold = 100;
+  } else if (cmd == 6) {
+    threshold = 150;
+  } else if (cmd == 7) {
+    threshold = 200;
+  } else if (cmd == 8) {
+    threshold = 250;
   }
 }
 

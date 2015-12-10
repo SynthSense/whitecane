@@ -6,10 +6,10 @@
 #include "Adafruit_MCP23008.h"
 #include <RFduinoBLE.h>
 
-#define TRIGGER_PIN_1  6  // I/O extender ID
-#define ECHO_PIN_1     2  // RFduino
-#define TRIGGER_PIN_2  7  // I/O extender ID
-#define ECHO_PIN_2     3  // RFduino
+#define TRIGGER_PIN_1  7  // I/O extender ID
+#define ECHO_PIN_1     3  // RFduino
+#define TRIGGER_PIN_2  6  // I/O extender ID
+#define ECHO_PIN_2     2  // RFduino
 
 // These should be using the MCP23008 port expander
 #define CANE_MOTOR_1        0
@@ -37,6 +37,7 @@ long curr_dist;
 int hcsr_timeout;
 int inter_ping_delay;
 int vibration_delay;
+int num_end_rotations;
 
 void pin_set(char pattern) {
   for(char i = 0; i < 8; i++) {
@@ -80,6 +81,30 @@ void navband_vibrate_right(void) {
   pin_set(0);
 }
 
+void navband_vibrate_left_arrive(void) {
+  Serial.print("*****NAV-BAND FINAL LEFT");
+  navband_vibrate_left();
+  for (int i = 0; i < num_end_rotations; i++) {
+    pin_set(0);
+    delay(100);
+    pin_set(32);
+    delay(100);
+    pin_set(0);
+  }
+}
+
+void navband_vibrate_right_arrive(void) {
+  Serial.print("*****NAV-BAND FINAL RIGHT");
+  navband_vibrate_right();
+  for (int i = 0; i < num_end_rotations; i++) {
+    pin_set(0);
+    delay(100);
+    pin_set(4);
+    delay(100);
+    pin_set(0);
+  }
+}
+
 void navband_vibrate(void) {
   mcp.digitalWrite(NAV_MOTOR_1, HIGH);
   mcp.digitalWrite(NAV_MOTOR_2, LOW);
@@ -116,6 +141,7 @@ void setup() {
   hcsr_timeout = 1000;
   inter_ping_delay = 100;
   vibration_delay = 500;
+  num_end_rotations = 3;
   pinMode(ECHO_PIN_1, INPUT);
   pinMode(ECHO_PIN_2, INPUT);
 
@@ -186,10 +212,15 @@ void loop() {
 }
 
 void RFduinoBLE_onReceive(char *data, int len) {
-  if (data[0] == 0){  
+  int cmd = data[0];
+  if (cmd == 0) {
     navband_vibrate_left();
-  } else if (data[0] == 1) {
+  } else if (cmd == 1) {
     navband_vibrate_right();
+  } else if (cmd == 2) {
+    navband_vibrate_left_arrive();
+  } else if (cmd == 3) {
+    navband_vibrate_right_arrive();
   }
 }
 
